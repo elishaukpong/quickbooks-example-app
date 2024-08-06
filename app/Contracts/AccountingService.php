@@ -17,7 +17,7 @@ interface AccountingService
 
     public function addSales($accessToken, $refreshToken);
 
-    public function getSales($accessToken, $refreshToken);
+    public function getSales();
 
     public function query(string $string);
 

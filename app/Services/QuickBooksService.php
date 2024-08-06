@@ -66,9 +66,9 @@ class QuickBooksService implements AccountingService
 
     }
 
-    public function getSales($accessToken, $refreshToken)
+    public function getSales()
     {
-
+        return $this->query("SELECT * FROM SalesReceipt");
     }
 
     public function setAccessToken(QuickBooks $quickBooks)

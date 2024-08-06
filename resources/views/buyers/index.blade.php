@@ -19,7 +19,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($expenses as $expense)
+                    @forelse($expenses as $expense)
                         <tr class="border-b">
                             <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->Id }}</td>
                             <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->TotalAmt }}</td>
@@ -27,7 +27,11 @@
                             <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->PaymentType }}</td>
                             <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->TxnDate }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 rounded shadow-md text-center">
+                            <h1 class="text-2xl mb-4">No Information Yet</h1>
+                        </div>
+                    @endforelse
 
                     </tbody>
                 </table>
