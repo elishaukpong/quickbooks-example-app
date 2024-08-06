@@ -15,7 +15,7 @@ interface AccountingService
 
     public function getExpenses();
 
-    public function addSales($accessToken, $refreshToken);
+    public function addSalesFor(User $user, array $options);
 
     public function getSales();
 

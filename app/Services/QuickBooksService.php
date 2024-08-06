@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\AccountingService;
 use App\Models\QuickBooks;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\DataService\DataService;
@@ -112,7 +113,7 @@ class QuickBooksService implements AccountingService
         return $this->query("SELECT * FROM Purchase") ?? [];
     }
 
-    public function addSales($accessToken, $refreshToken)
+    public function addSalesFor(User $user, array $options)
     {
 
     }

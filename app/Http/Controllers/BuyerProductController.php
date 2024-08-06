@@ -44,9 +44,9 @@ class BuyerProductController extends Controller
         ]);
     }
 
-    private function recordSalesFor($product)
+    private function recordSalesFor($product): void
     {
-        $this->accountingService->addExpenses([
+        $this->accountingService->addSales([
             'price' => $product->price,
             'vendor_id' => $product->user->quickbooks->vendor_id
         ]);
