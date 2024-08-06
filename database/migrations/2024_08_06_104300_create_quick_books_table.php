@@ -20,6 +20,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('access_token');
             $table->string('refresh_token');
+            $table->string('realm_id');
             $table->dateTime('expires_in');
             $table->timestamps();
         });
