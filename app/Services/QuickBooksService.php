@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\AccountingService;
+use App\Models\QuickBooks;
 use Illuminate\Http\Request;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\DataService\DataService;
@@ -74,11 +75,13 @@ class QuickBooksService implements AccountingService
 
     }
 
-    public function setAccessToken($accessToken, $refreshToken, $realmId)
+    public function setAccessToken(QuickBooks $quickBooks)
     {
-        $this->oAuth2AccessToken->setAccessToken($accessToken);
-        $this->oAuth2AccessToken->setRefreshToken($refreshToken);
-        $this->oAuth2AccessToken->setRealmID($realmId);
+        $this->oAuth2AccessToken->setAccessToken($quickBooks->access_token);
+        $this->oAuth2AccessToken->setRefreshToken($quickBooks->refresh_token);
+        $this->oAuth2AccessToken->setRealmID($quickBooks->realm_id);
+
+        $this->dataService->updateOAuth2Token($this->oAuth2AccessToken);
 
         return $this;
     }
@@ -90,11 +93,21 @@ class QuickBooksService implements AccountingService
 
     public function query(string $string)
     {
-        $dataService =  $this->dataService->updateOAuth2Token($this->oAuth2AccessToken);
-        $oauth2LoginHelper = $dataService->getOAuth2LoginHelper();
+        $oauth2LoginHelper = $this->dataService->getOAuth2LoginHelper();
+        $quickBooks = auth()->user()->quickbooks;
 
-        if($oauth2LoginHelper->isAccessTokenExpired())
+        if(now()->gt($quickBooks->expires_in)) {
+            $token = $oauth2LoginHelper->refreshToken();
 
-        return $dataService->Query($string);
+            $quickBooks->update([
+                'access_token' => $token->getAccessToken(),
+                'refresh_token' => $token->getRefreshToken(),
+                'expires_in' => $token->getAccessTokenExpiresAt(),
+            ]);
+
+            $this->setAccessToken($quickBooks->fresh());
+        }
+
+        return $this->dataService->Query($string);
     }
 }

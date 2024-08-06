@@ -54,7 +54,7 @@ class QuickBooksController extends Controller
 
         try {
             $expenseAccounts = $this->accountingService
-                ->setAccessToken($quickBooks->access_token, $quickBooks->refresh_token, $quickBooks->realm_id)
+                ->setAccessToken($quickBooks)
                 ->query("SELECT * FROM Account WHERE AccountType = 'Expense'");
         }catch (\Exception $e) {
             dd($e->getMessage());

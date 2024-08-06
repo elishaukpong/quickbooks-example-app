@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Models\QuickBooks;
 use Illuminate\Http\Request;
 
 interface AccountingService
@@ -20,6 +21,6 @@ interface AccountingService
 
     public function query(string $string);
 
-    public function setAccessToken($accessToken, $refreshToken, $realmId);
+    public function setAccessToken(QuickBooks $quickBooks);
 
 }
