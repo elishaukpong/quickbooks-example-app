@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contracts\AccountingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use QuickBooksOnline\API\Exception\SdkException;
 use QuickBooksOnline\API\Exception\ServiceException;
@@ -37,11 +38,12 @@ class QuickBooksController extends Controller
                     'access_token' => $accessTokenDetails->getAccessToken(),
                     'refresh_token' => $accessTokenDetails->getRefreshToken(),
                     'realm_id' => $accessTokenDetails->getRealmId(),
-                    'expires_at' => now()->addSeconds($accessTokenDetails->getAccessTokenValidationPeriodInSeconds())
+                    'expires_in' => now()->addSeconds($accessTokenDetails->getAccessTokenValidationPeriodInSeconds())
                 ]);
 
             return redirect()->route('quickbooks.index')->with('success', 'Connected Quickbooks Successfully!');
         }catch (ServiceException|SdkException $e) {
+            Log::info($e->getMessage());
             return redirect()->route('quickbooks.index')->with('error', $e->getMessage());
         }
     }

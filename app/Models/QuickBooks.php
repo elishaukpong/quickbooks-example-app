@@ -10,6 +10,8 @@ class QuickBooks extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $casts = [
         'expires_in' => 'datetime'
     ];

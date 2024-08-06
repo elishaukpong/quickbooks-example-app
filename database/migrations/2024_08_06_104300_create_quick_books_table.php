@@ -18,7 +18,7 @@ return new class extends Migration
                 ->on('users')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->string('access_token');
+            $table->text('access_token');
             $table->string('refresh_token');
             $table->string('realm_id');
             $table->dateTime('expires_in');
