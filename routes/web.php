@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\BuyerController;
+use App\Http\Controllers\BuyerProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuickBooksController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,6 +23,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('buyer', [BuyerController::class,'index'])->name('buyer.index');
     Route::get('supplier', [SupplierController::class,'index'])->name('supplier.index');
+
+    Route::get('buyer/products', [BuyerProductController::class,'index'])->name('buyer.product.index');
+    Route::get('buyer/products/purchase', [SupplierController::class,'index'])->name('supplier.index');
+
+    Route::get('supplier/products', [SupplierProductController::class,'index'])->name('supplier.product.index');
+    Route::get('supplier/products/generate', [SupplierProductController::class,'generate'])->name('supplier.product.generate');
+
+
+
     Route::get('quickbooks', [QuickBooksController::class,'index'])->name('quickbooks.index');
     Route::get('quickbooks/connect/auth', [QuickBooksController::class,'connect'])->name('quickbooks.auth');
     Route::get('quickbooks/callback', [QuickBooksController::class,'handleCallback']);

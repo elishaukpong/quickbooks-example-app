@@ -29,10 +29,22 @@
                             {{ __('Expenses') }}
                         </x-nav-link>
                     </div>
+
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('buyer.product.index')" :active="request()->routeIs('buyer.product.index')">
+                            {{ __('Products') }}
+                        </x-nav-link>
+                    </div>
                 @else
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('supplier.index')" :active="request()->routeIs('supplier.index')">
                             {{ __('Sales') }}
+                        </x-nav-link>
+                    </div>
+
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('supplier.product.index')" :active="request()->routeIs('supplier.product.index')">
+                            {{ __('Products') }}
                         </x-nav-link>
                     </div>
                 @endif
