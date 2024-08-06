@@ -19,8 +19,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('buyer', [BuyerController::class,'index']);
-    Route::get('supplier', [SupplierController::class,'index']);
+    Route::get('buyer', [BuyerController::class,'index'])->name('buyer.index');
+    Route::get('supplier', [SupplierController::class,'index'])->name('supplier.index');
     Route::get('quickbooks', [QuickBooksController::class,'index'])->name('quickbooks.index');
     Route::get('quickbooks/connect/auth', [QuickBooksController::class,'connect'])->name('quickbooks.auth');
     Route::get('quickbooks/callback', [QuickBooksController::class,'handleCallback']);
