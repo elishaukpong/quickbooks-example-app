@@ -2,9 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class QuickBooksController extends Controller
 {
-    //
+    public function index(): View
+    {
+        return view('quickbooks.index');
+    }
+
+    public function handleCallback()
+    {
+
+    }
 }
