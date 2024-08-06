@@ -4,11 +4,14 @@ namespace App\Services;
 
 use App\Contracts\AccountingService;
 use App\Models\QuickBooks;
+use Illuminate\Support\Facades\Log;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\Exception\SdkException;
 use QuickBooksOnline\API\Exception\ServiceException;
+use QuickBooksOnline\API\Facades\Account;
 use QuickBooksOnline\API\Facades\Customer;
+use QuickBooksOnline\API\Facades\Purchase;
 use QuickBooksOnline\API\Facades\Vendor;
 
 class QuickBooksService implements AccountingService
@@ -59,30 +62,54 @@ class QuickBooksService implements AccountingService
 
     public function addExpenses(array $options)
     {
-//        $expenseData = [
-//            "AccountRef" => [
-//                "value" => "EXPENSE_ACCOUNT_ID",
-//                "name" => "Expense Account"
-//            ],
-//            "PaymentType" => "CreditCard",
-//            "EntityRef" => [
-//                "value" => "VENDOR_ID",
-//                "type" => "Vendor"
-//            ],
-//            "TotalAmt" => 100.00,
-//            "Line" => [
-//                [
-//                    "DetailType" => "AccountBasedExpenseLineDetail",
-//                    "Amount" => 100.00,
-//                    "AccountBasedExpenseLineDetail" => [
-//                        "AccountRef" => [
-//                            "value" => "EXPENSE_ACCOUNT_ID",
-//                            "name" => "Expense Account"
-//                        ]
-//                    ]
-//                ]
-//            ]
-//        ];
+        $this->setAccessTokenWithRefreshAbilities();
+
+        try{
+
+            $purchaseData = [
+                "AccountRef" => [
+                    "name" => "Accounts Receivable",
+                    "value" => "92",
+                ],
+                "EntityRef" => [
+                    "value" => $options['vendor_id'],
+                    "type" => "Vendor"
+                ],
+                "TotalAmt" => $options['price'],
+                "Line" => [
+                    [
+                        "DetailType" => "AccountBasedExpenseLineDetail",
+                        "Amount" => $options['price'],
+                        "AccountBasedExpenseLineDetail" => [
+                            "AccountRef" => [
+                                "name" => "Uncategorized Expense",
+                                "value" => "126",
+                            ]
+                        ]
+                    ]
+                ],
+                "PaymentType" => "Cash",
+            ];
+
+            $purchase = Purchase::create($purchaseData);
+
+            $result = $this->dataService->Add($purchase);
+
+            if (!$result) {
+                $error = $this->dataService->getLastError();
+                Log::info("Error: " . $error->getResponseBody());
+                return null;
+            }
+
+            return $result;
+        }catch (\Exception $e) {
+            Log::info($e->getMessage());
+        }
+    }
+
+    public function getExpenses()
+    {
+        return $this->query("SELECT * FROM Purchase") ?? [];
     }
 
     public function addSales($accessToken, $refreshToken)
@@ -104,11 +131,6 @@ class QuickBooksService implements AccountingService
         $this->dataService->updateOAuth2Token($this->oAuth2AccessToken);
 
         return $this;
-    }
-
-    public function getExpenses()
-    {
-        return $this->query("SELECT * FROM Purchase") ?? [];
     }
 
     /**
@@ -160,6 +182,9 @@ class QuickBooksService implements AccountingService
         $oauth2LoginHelper = $this->dataService->getOAuth2LoginHelper();
         $quickBooks = auth()->user()->quickbooks;
 
+        $this->setAccessToken($quickBooks->fresh());
+
+
         if (now()->gt($quickBooks->expires_in)) {
             $token = $oauth2LoginHelper->refreshToken();
 
@@ -168,8 +193,9 @@ class QuickBooksService implements AccountingService
                 'refresh_token' => $token->getRefreshToken(),
                 'expires_in' => $token->getAccessTokenExpiresAt(),
             ]);
+
+            $this->setAccessToken($quickBooks->fresh());
         }
 
-        $this->setAccessToken($quickBooks->fresh());
     }
 }

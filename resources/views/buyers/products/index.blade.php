@@ -22,7 +22,7 @@
                             <td class="px-4 py-2 text-sm text-gray-700">{{ $product->name }}</td>
                             <td class="px-4 py-2 text-sm text-gray-700">{{ $product->price }}</td>
                             <td class="px-4 py-4 text-sm text-gray-700">
-                                <a href="{{ route('supplier.product.generate') }}" class="bg-blue-500 text-white py-2 px-4 rounded">
+                                <a href="{{ route('buyer.product.purchase', $product->id) }}" class="bg-blue-500 text-white py-2 px-4 rounded">
                                     Buy
                                 </a>
                             </td>

@@ -25,12 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::get('supplier', [SupplierController::class,'index'])->name('supplier.index');
 
     Route::get('buyer/products', [BuyerProductController::class,'index'])->name('buyer.product.index');
-    Route::get('buyer/products/purchase', [SupplierController::class,'index'])->name('supplier.index');
+    Route::get('buyer/products/{product}/purchase', [BuyerProductController::class,'purchase'])->name('buyer.product.purchase');
 
     Route::get('supplier/products', [SupplierProductController::class,'index'])->name('supplier.product.index');
     Route::get('supplier/products/generate', [SupplierProductController::class,'generate'])->name('supplier.product.generate');
-
-
 
     Route::get('quickbooks', [QuickBooksController::class,'index'])->name('quickbooks.index');
     Route::get('quickbooks/connect/auth', [QuickBooksController::class,'connect'])->name('quickbooks.auth');
