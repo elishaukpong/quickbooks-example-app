@@ -3,7 +3,6 @@
 namespace App\Contracts;
 
 use App\Models\QuickBooks;
-use Illuminate\Http\Request;
 
 interface AccountingService
 {

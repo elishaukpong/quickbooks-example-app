@@ -68,7 +68,7 @@ class QuickBooksService implements AccountingService
 
     public function getSales()
     {
-        return $this->query("SELECT * FROM SalesReceipt");
+        return $this->query("SELECT * FROM SalesReceipt") ?? [];
     }
 
     public function setAccessToken(QuickBooks $quickBooks)
@@ -82,14 +82,9 @@ class QuickBooksService implements AccountingService
         return $this;
     }
 
-    public function refreshToken($refreshToken)
-    {
-
-    }
-
     public function getExpenses()
     {
-        return $this->query("SELECT * FROM Purchase");
+        return $this->query("SELECT * FROM Purchase") ?? [];
     }
 
     public function query(string $string)
