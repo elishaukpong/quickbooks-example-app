@@ -11,26 +11,24 @@
                 <table class="w-full bg-white border border-gray-200">
                     <thead>
                     <tr class="w-full bg-gray-100 border-b border-gray-200">
-                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Heading 1</th>
-                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Heading 2</th>
-                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Heading 3</th>
-                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Heading 4</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Account Id</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Amount</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Currency</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Method</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Date</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="border-b">
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 1</td>
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 2</td>
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 3</td>
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 4</td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 5</td>
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 6</td>
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 7</td>
-                        <td class="px-4 py-2 text-sm text-gray-700">Data 8</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
+                    @foreach($expenses as $expense)
+                        <tr class="border-b">
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->Id }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->TotalAmt }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->CurrencyRef }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->PaymentType }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $expense->TxnDate }}</td>
+                        </tr>
+                    @endforeach
+
                     </tbody>
                 </table>
             </div>

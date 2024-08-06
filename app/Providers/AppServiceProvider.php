@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
                 config('quickbooks.secret'),
                 config('quickbooks.redirect'),
                 config('quickbooks.environment'),
+                config('quickbooks.base_url'),
             );
         });
     }

@@ -19,7 +19,8 @@ class QuickBooksService implements AccountingService
         protected string $clientID,
         protected string $clientSecret,
         protected string $redirectUri,
-        protected string $environment
+        protected string $environment,
+        protected string $baseUrl,
     )
     {
         $this->dataService = DataService::Configure([
@@ -28,7 +29,7 @@ class QuickBooksService implements AccountingService
             'ClientSecret' => $this->clientSecret,
             'RedirectURI' => $this->redirectUri,
             'scope' => 'com.intuit.quickbooks.accounting',
-            'baseUrl' => $this->environment
+            'baseUrl' => $this->baseUrl
         ]);
 
         $this->oAuth2AccessToken = new OAuth2AccessToken(
@@ -60,11 +61,6 @@ class QuickBooksService implements AccountingService
 
     }
 
-    public function getExpenses($accessToken, $refreshToken)
-    {
-
-    }
-
     public function addSales($accessToken, $refreshToken)
     {
 
@@ -89,6 +85,11 @@ class QuickBooksService implements AccountingService
     public function refreshToken($refreshToken)
     {
 
+    }
+
+    public function getExpenses()
+    {
+        return $this->query("SELECT * FROM Purchase");
     }
 
     public function query(string $string)

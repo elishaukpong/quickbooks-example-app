@@ -13,7 +13,7 @@ interface AccountingService
 
     public function addExpenses($accessToken, $refreshToken);
 
-    public function getExpenses($accessToken, $refreshToken);
+    public function getExpenses();
 
     public function addSales($accessToken, $refreshToken);
 
