@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('refresh_token');
             $table->string('realm_id');
             $table->dateTime('expires_in');
+            $table->integer('customer_id')->nullable();
+            $table->integer('vendor_id')->nullable();
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@
 namespace App\Contracts;
 
 use App\Models\QuickBooks;
+use App\Models\User;
 
 interface AccountingService
 {
@@ -10,7 +11,7 @@ interface AccountingService
 
     public function handleCallback(array $options);
 
-    public function addExpenses($accessToken, $refreshToken);
+    public function addExpenses(array $options);
 
     public function getExpenses();
 
@@ -21,5 +22,9 @@ interface AccountingService
     public function query(string $string);
 
     public function setAccessToken(QuickBooks $quickBooks);
+
+    public function createCustomer(array $options);
+
+    public function createVendor(array $options);
 
 }

@@ -32,14 +32,34 @@ class QuickBooksController extends Controller
         try {
             $accessTokenDetails = $this->accountingService->handleCallback($request->only('code', 'realmId'));
 
-            auth()->user()
-                ->quickbooks()
+            $user = auth()->user();
+
+            $user->quickbooks()
                 ->create([
                     'access_token' => $accessTokenDetails->getAccessToken(),
                     'refresh_token' => $accessTokenDetails->getRefreshToken(),
                     'realm_id' => $accessTokenDetails->getRealmId(),
                     'expires_in' => now()->addSeconds($accessTokenDetails->getAccessTokenValidationPeriodInSeconds())
                 ]);
+
+            if($user->isBuyer()) {
+                $customerDetails = $this->accountingService->createCustomer([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ]);
+
+                $extraDetails['customer_id'] = $customerDetails->Id;
+
+            } else {
+                $vendorDetails = $this->accountingService->createVendor([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ]);
+
+                $extraDetails['vendor_id'] = $vendorDetails->Id;
+            }
+
+            $user->quickbooks()->update($extraDetails);
 
             return redirect()->route('quickbooks.index')->with('success', 'Connected Quickbooks Successfully!');
         }catch (ServiceException|SdkException $e) {
@@ -50,23 +70,14 @@ class QuickBooksController extends Controller
 
     public function list()
     {
-        $quickBooks = auth()->user()->quickbooks;
+        $user = auth()->user();
 
-        try {
-            $expenseAccounts = $this->accountingService
-                ->setAccessToken($quickBooks)
-                ->query("SELECT * FROM Account WHERE AccountType = 'Expense'");
-        }catch (\Exception $e) {
-            dd($e->getMessage());
+        if(auth()->user()->isBuyer()) {
+            $customerDetails = $this->accountingService->query("SELECT * FROM Customer");
+
+            dd($customerDetails);
+        } else {
+            $this->accountingService->createVendorFor(auth()->user());
         }
-
-
-//
-        dd($expenseAccounts);
-//
-//        foreach ($expenseAccounts as $account) {
-//            echo "Account ID: " . $account . " Name: " . $account->Name . "<br>\n";
-//        }
-
     }
 }
