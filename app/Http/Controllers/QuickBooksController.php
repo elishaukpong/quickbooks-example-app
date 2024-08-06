@@ -47,4 +47,26 @@ class QuickBooksController extends Controller
             return redirect()->route('quickbooks.index')->with('error', $e->getMessage());
         }
     }
+
+    public function list()
+    {
+        $quickBooks = auth()->user()->quickbooks;
+
+        try {
+            $expenseAccounts = $this->accountingService
+                ->setAccessToken($quickBooks->access_token, $quickBooks->refresh_token, $quickBooks->realm_id)
+                ->query("SELECT * FROM Account WHERE AccountType = 'Expense'");
+        }catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+
+
+//
+        dd($expenseAccounts);
+//
+//        foreach ($expenseAccounts as $account) {
+//            echo "Account ID: " . $account . " Name: " . $account->Name . "<br>\n";
+//        }
+
+    }
 }

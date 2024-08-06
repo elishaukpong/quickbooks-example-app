@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('quickbooks', [QuickBooksController::class,'index'])->name('quickbooks.index');
     Route::get('quickbooks/connect/auth', [QuickBooksController::class,'connect'])->name('quickbooks.auth');
     Route::get('quickbooks/callback', [QuickBooksController::class,'handleCallback']);
+    Route::get('quickbooks/list', [QuickBooksController::class,'list']);
 
 });
 
