@@ -1,18 +1,21 @@
-<!-- resources/views/connect-quickbooks.blade.php -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect QuickBooks</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-<div class="bg-white p-6 rounded shadow-md text-center">
-    <h1 class="text-2xl mb-4">Connect to QuickBooks</h1>
-    <a href="{{ route('quickbooks.auth') }}" class="bg-blue-500 text-white py-2 px-4 rounded">
-        Connect QuickBooks
-    </a>
-</div>
-</body>
-</html>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Quick Books') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 rounded shadow-md text-center">
+                <h1 class="text-2xl mb-4">Connect to QuickBooks</h1>
+                <a href="{{ route('quickbooks.auth') }}" class="bg-blue-500 text-white py-2 px-4 rounded">
+                    Connect QuickBooks
+                </a>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+
+
+
