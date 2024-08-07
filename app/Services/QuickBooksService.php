@@ -230,7 +230,6 @@ class QuickBooksService implements AccountingService
 
         $this->setAccessToken($quickBooks->fresh());
 
-
         if (now()->gt($quickBooks->expires_in)) {
             $token = $oauth2LoginHelper->refreshToken();
 
