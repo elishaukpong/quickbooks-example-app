@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Contracts\AccountingService;
 use App\Models\QuickBooks;
+use App\Models\QuickBooksVendor;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\DataService\DataService;
@@ -71,6 +73,7 @@ class QuickBooksService implements AccountingService
         $this->setAccessTokenWithRefreshAbilities();
 
         try{
+            $vendor = $this->getVendorDetailsFor($options['vendor']);
 
             $purchaseData = [
                 "AccountRef" => [
@@ -78,7 +81,7 @@ class QuickBooksService implements AccountingService
                     "value" => "163",
                 ],
                 "EntityRef" => [
-                    "value" => $options['vendor_id'],
+                    "value" => $vendor->vendor_id,
                     "type" => "Vendor"
                 ],
                 "TotalAmt" => $options['price'],
@@ -161,13 +164,13 @@ class QuickBooksService implements AccountingService
 
             if (!$result) {
                 $error = $this->dataService->getLastError();
-                Log::info("Error herrrrr: " . $error->getResponseBody());
+                Log::info("Error: " . $error->getResponseBody());
                 return null;
             }
 
             return $result;
         }catch (\Exception $e) {
-            Log::info('hi'.$e->getMessage());
+            Log::info($e->getMessage());
         }
 
     }
@@ -179,8 +182,6 @@ class QuickBooksService implements AccountingService
 
     public function setAccessToken(QuickBooks $quickBooks)
     {
-        Log::info('Setting Access Token', ['access_token' => $quickBooks->access_token]);
-
         $this->oAuth2AccessToken->setAccessToken($quickBooks->access_token);
         $this->oAuth2AccessToken->setRefreshToken($quickBooks->refresh_token);
         $this->oAuth2AccessToken->setRealmID($quickBooks->realm_id);
@@ -234,13 +235,10 @@ class QuickBooksService implements AccountingService
      * @throws SdkException
      * @throws ServiceException
      */
-    public function setAccessTokenWithRefreshAbilities(?User $user = null): void
+    protected function setAccessTokenWithRefreshAbilities(?User $user = null): void
     {
         $user = $user ?? auth()->user();
         $quickBooks = $user->quickbooks;
-
-        Log::info('Setting Access Token With Refresh Abilities', ['quickBooks' => $quickBooks]);
-
 
         $this->setAccessToken($quickBooks);
 
@@ -265,5 +263,29 @@ class QuickBooksService implements AccountingService
             }
         }
 
+    }
+
+    private function getVendorDetailsFor(User $vendor): QuickBooksVendor
+    {
+        try {
+            return auth()->user()
+                ->quickbooks
+                ->vendors()
+                ->where('user_id', $vendor->id)
+                ->firstOrFail();
+        }catch(ModelNotFoundException $e) {
+            $vendorDetails = $this->createVendor([
+               'name' => $vendor->name,
+               'email' => $vendor->email
+            ]);
+
+            return auth()->user()
+                ->quickbooks
+                ->vendors()
+                ->create([
+                   'user_id' => $vendor->id,
+                   'vendor_id' => $vendorDetails->Id
+                ]);
+        }
     }
 }

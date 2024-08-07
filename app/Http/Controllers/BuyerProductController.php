@@ -40,7 +40,7 @@ class BuyerProductController extends Controller
     {
         $this->accountingService->addExpenses([
             'price' => $product->price,
-            'vendor_id' => $product->user->quickbooks->vendor_id
+            'vendor' => $product->user
         ]);
     }
 
