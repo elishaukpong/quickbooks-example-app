@@ -135,10 +135,6 @@ class QuickBooksService implements AccountingService
                         "DetailType" => "SalesItemLineDetail",
                         "Amount" => $options['price'],
                         "SalesItemLineDetail" => [
-                            "ItemRef" => [
-                                "value" => $options['product_id'],
-                                "name" => $options['product_name']
-                            ],
                             "UnitPrice" => $options['price'],
                             "Qty" => 1
                         ]
@@ -155,13 +151,13 @@ class QuickBooksService implements AccountingService
 
             if (!$result) {
                 $error = $this->dataService->getLastError();
-                Log::info("Error: " . $error->getResponseBody());
+                Log::info("Error herrrrr: " . $error->getResponseBody());
                 return null;
             }
 
             return $result;
         }catch (\Exception $e) {
-            Log::info($e->getMessage());
+            Log::info('hi'.$e->getMessage());
         }
 
     }
