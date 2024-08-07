@@ -47,8 +47,8 @@ class QuickBooksService implements AccountingService
 
     public function connect(): string
     {
-        $OAuth2LoginHelper = $this->dataService->getOAuth2LoginHelper();
-        return $OAuth2LoginHelper->getAuthorizationCodeURL();
+        return $this->dataService->getOAuth2LoginHelper()
+            ->getAuthorizationCodeURL();
     }
 
     /**
@@ -62,6 +62,10 @@ class QuickBooksService implements AccountingService
         return $OAuth2LoginHelper->exchangeAuthorizationCodeForToken($options['code'], $options['realmId']);
     }
 
+    /**
+     * @throws ServiceException
+     * @throws SdkException
+     */
     public function addExpenses(array $options)
     {
         $this->setAccessTokenWithRefreshAbilities();
@@ -109,8 +113,14 @@ class QuickBooksService implements AccountingService
         }
     }
 
+    /**
+     * @throws ServiceException
+     * @throws SdkException
+     */
     public function getExpenses()
     {
+        $this->setAccessTokenWithRefreshAbilities();
+
         return $this->query("SELECT * FROM Purchase") ?? [];
     }
 
@@ -169,6 +179,8 @@ class QuickBooksService implements AccountingService
 
     public function setAccessToken(QuickBooks $quickBooks)
     {
+        Log::info('Setting Access Token', ['access_token' => $quickBooks->access_token]);
+
         $this->oAuth2AccessToken->setAccessToken($quickBooks->access_token);
         $this->oAuth2AccessToken->setRefreshToken($quickBooks->refresh_token);
         $this->oAuth2AccessToken->setRealmID($quickBooks->realm_id);
@@ -224,22 +236,33 @@ class QuickBooksService implements AccountingService
      */
     public function setAccessTokenWithRefreshAbilities(?User $user = null): void
     {
-        $oauth2LoginHelper = $this->dataService->getOAuth2LoginHelper();
         $user = $user ?? auth()->user();
         $quickBooks = $user->quickbooks;
 
-        $this->setAccessToken($quickBooks->fresh());
+        Log::info('Setting Access Token With Refresh Abilities', ['quickBooks' => $quickBooks]);
+
+
+        $this->setAccessToken($quickBooks);
 
         if (now()->gt($quickBooks->expires_in)) {
-            $token = $oauth2LoginHelper->refreshToken();
+            $oauth2LoginHelper = $this->dataService->getOAuth2LoginHelper();
 
-            $quickBooks->update([
-                'access_token' => $token->getAccessToken(),
-                'refresh_token' => $token->getRefreshToken(),
-                'expires_in' => $token->getAccessTokenExpiresAt(),
-            ]);
+            try {
+                $newAccessToken = $oauth2LoginHelper->refreshAccessTokenWithRefreshToken($quickBooks->refresh_token);
 
-            $this->setAccessToken($quickBooks->fresh());
+                // Update the QuickBooks model with new tokens and expiration time
+                $quickBooks->update([
+                    'access_token' => $newAccessToken->getAccessToken(),
+                    'refresh_token' => $newAccessToken->getRefreshToken(),
+                    'expires_in' => $newAccessToken->getAccessTokenExpiresAt(),
+                ]);
+
+                // Re-set the access token with the new tokens
+                $this->setAccessToken($quickBooks->fresh());
+            } catch (\Exception $e) {
+                Log::error('Error refreshing QuickBooks token: ' . $e->getMessage());
+                throw $e;
+            }
         }
 
     }

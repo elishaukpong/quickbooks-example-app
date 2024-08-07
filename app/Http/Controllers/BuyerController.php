@@ -14,13 +14,8 @@ class BuyerController extends Controller
 
     public function index(): View
     {
-        $quickBooks = auth()->user()->quickbooks;
-
         try {
-            $expenses = $this->accountingService
-                ->setAccessToken($quickBooks)
-                ->getExpenses();
-
+            $expenses = $this->accountingService->getExpenses();
         }catch (\Exception $e) {
             dd($e->getMessage());
         }
