@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\AccountingService;
 use App\Models\QuickBooks;
+use App\Models\QuickBooksCustomer;
 use App\Models\QuickBooksVendor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -297,7 +298,7 @@ class QuickBooksService implements AccountingService
         }
     }
 
-    private function getCustomerDetailsFor(User $user, User $customer): QuickBooksVendor
+    private function getCustomerDetailsFor(User $user, User $customer): QuickBooksCustomer
     {
         try {
             return $user->quickbooks
