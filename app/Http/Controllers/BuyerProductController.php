@@ -27,7 +27,7 @@ class BuyerProductController extends Controller
             $product = Product::with('user.quickbooks')->findOrFail($productId);
 
             $this->recordPurchaseFor($product);
-            $this->recordSalesFor($product);
+//            $this->recordSalesFor($product);
 
             return redirect()->route('buyer.index');
 
@@ -46,9 +46,16 @@ class BuyerProductController extends Controller
 
     private function recordSalesFor($product): void
     {
-        $this->accountingService->addSales([
+        $user = auth()->user();
+
+        dd($this->accountingService->addSalesFor($product->user, [
+            'customer_id' => $user->quickbooks->customer_id,
+            'customer_name' => $user->name,
+            'customer_email' => $user->email,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
             'price' => $product->price,
             'vendor_id' => $product->user->quickbooks->vendor_id
-        ]);
+        ]));
     }
 }

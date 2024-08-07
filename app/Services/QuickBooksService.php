@@ -13,6 +13,7 @@ use QuickBooksOnline\API\Exception\ServiceException;
 use QuickBooksOnline\API\Facades\Account;
 use QuickBooksOnline\API\Facades\Customer;
 use QuickBooksOnline\API\Facades\Purchase;
+use QuickBooksOnline\API\Facades\SalesReceipt;
 use QuickBooksOnline\API\Facades\Vendor;
 
 class QuickBooksService implements AccountingService
@@ -69,8 +70,8 @@ class QuickBooksService implements AccountingService
 
             $purchaseData = [
                 "AccountRef" => [
-                    "name" => "Accounts Receivable",
-                    "value" => "92",
+                    "name" => "Undeposited Funds",
+                    "value" => "163",
                 ],
                 "EntityRef" => [
                     "value" => $options['vendor_id'],
@@ -83,8 +84,8 @@ class QuickBooksService implements AccountingService
                         "Amount" => $options['price'],
                         "AccountBasedExpenseLineDetail" => [
                             "AccountRef" => [
-                                "name" => "Uncategorized Expense",
-                                "value" => "126",
+                                "name" => "Gross Receipts",
+                                "value" => "165",
                             ]
                         ]
                     ]
@@ -113,8 +114,55 @@ class QuickBooksService implements AccountingService
         return $this->query("SELECT * FROM Purchase") ?? [];
     }
 
+    /**
+     * @throws ServiceException
+     * @throws SdkException
+     */
     public function addSalesFor(User $user, array $options)
     {
+        $this->setAccessTokenWithRefreshAbilities($user);
+
+        try{
+
+            $salesReceiptData = [
+                "CustomerRef" => [
+                    "value" => $options['customer_id'],
+                    "name" => $options['customer_name']
+                ],
+                "PaymentType" => "Cash",
+                "Line" => [
+                    [
+                        "DetailType" => "SalesItemLineDetail",
+                        "Amount" => $options['price'],
+                        "SalesItemLineDetail" => [
+                            "ItemRef" => [
+                                "value" => $options['product_id'],
+                                "name" => $options['product_name']
+                            ],
+                            "UnitPrice" => $options['price'],
+                            "Qty" => 1
+                        ]
+                    ]
+                ],
+                "BillEmail" => [
+                    "Address" => $options['customer_email']
+                ]
+            ];
+
+            $salesReceipt = SalesReceipt::create($salesReceiptData);
+
+            $result = $this->dataService->Add($salesReceipt);
+
+            if (!$result) {
+                $error = $this->dataService->getLastError();
+                Log::info("Error: " . $error->getResponseBody());
+                return null;
+            }
+
+            return $result;
+        }catch (\Exception $e) {
+            Log::info($e->getMessage());
+        }
 
     }
 
@@ -178,10 +226,11 @@ class QuickBooksService implements AccountingService
      * @throws SdkException
      * @throws ServiceException
      */
-    public function setAccessTokenWithRefreshAbilities(): void
+    public function setAccessTokenWithRefreshAbilities(?User $user = null): void
     {
         $oauth2LoginHelper = $this->dataService->getOAuth2LoginHelper();
-        $quickBooks = auth()->user()->quickbooks;
+        $user = $user ?? auth()->user();
+        $quickBooks = $user->quickbooks;
 
         $this->setAccessToken($quickBooks->fresh());
 

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use QuickBooksOnline\API\Exception\SdkException;
 use QuickBooksOnline\API\Exception\ServiceException;
-use QuickBooksOnline\API\Facades\Account;
 
 class QuickBooksController extends Controller
 {
@@ -74,7 +73,7 @@ class QuickBooksController extends Controller
         $user = auth()->user();
 
         if(auth()->user()->isBuyer()) {
-            $customerDetails = $this->accountingService->query("SELECT * FROM Account");
+            $customerDetails = $this->accountingService->query("SELECT * FROM vendor");
 
             dd($customerDetails);
         } else {
