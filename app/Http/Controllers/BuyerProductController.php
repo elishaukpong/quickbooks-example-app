@@ -49,13 +49,8 @@ class BuyerProductController extends Controller
         $user = auth()->user();
 
         $this->accountingService->addSalesFor($product->user, [
-            'customer_id' => $user->quickbooks->customer_id,
-            'customer_name' => $user->name,
-            'customer_email' => $user->email,
-            'product_id' => $product->id,
-            'product_name' => $product->name,
+            'customer' => $user,
             'price' => $product->price,
-            'vendor_id' => $product->user->quickbooks->vendor_id,
         ]);
     }
 }

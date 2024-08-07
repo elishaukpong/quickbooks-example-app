@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\DataService\DataService;
+use QuickBooksOnline\API\Exception\IdsException;
 use QuickBooksOnline\API\Exception\SdkException;
 use QuickBooksOnline\API\Exception\ServiceException;
 use QuickBooksOnline\API\Facades\Account;
@@ -137,10 +138,12 @@ class QuickBooksService implements AccountingService
 
         try{
 
+            $customer = $this->getCustomerDetailsFor($user, $options['customer']);
+
             $salesReceiptData = [
                 "CustomerRef" => [
-                    "value" => $options['customer_id'],
-                    "name" => $options['customer_name']
+                    "value" => $customer->customer_id,
+                    "name" => $customer->user->name,
                 ],
                 "PaymentType" => "Cash",
                 "Line" => [
@@ -154,7 +157,7 @@ class QuickBooksService implements AccountingService
                     ]
                 ],
                 "BillEmail" => [
-                    "Address" => $options['customer_email']
+                    "Address" => $customer->user->email
                 ]
             ];
 
@@ -202,9 +205,14 @@ class QuickBooksService implements AccountingService
         return $this->dataService->Query($string);
     }
 
-    public function createCustomer(array $options)
+    /**
+     * @throws ServiceException
+     * @throws SdkException
+     * @throws IdsException
+     */
+    public function createCustomer(array $options, ?User $user = null)
     {
-        $this->setAccessTokenWithRefreshAbilities();
+        $this->setAccessTokenWithRefreshAbilities($user);
 
         $customer = Customer::create([
             "DisplayName" => $options['name'],
@@ -285,6 +293,28 @@ class QuickBooksService implements AccountingService
                 ->create([
                    'user_id' => $vendor->id,
                    'vendor_id' => $vendorDetails->Id
+                ]);
+        }
+    }
+
+    private function getCustomerDetailsFor(User $user, User $customer): QuickBooksVendor
+    {
+        try {
+            return $user->quickbooks
+                ->customers()
+                ->where('user_id', $customer->id)
+                ->firstOrFail();
+        }catch(ModelNotFoundException $e) {
+            $customerDetails = $this->createCustomer([
+                'name' => $customer->name,
+                'email' => $customer->email
+            ], $user);
+
+            return $user->quickbooks
+                ->customers()
+                ->create([
+                    'user_id' => $customer->id,
+                    'customer_id' => $customerDetails->Id
                 ]);
         }
     }
