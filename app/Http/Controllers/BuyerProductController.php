@@ -55,7 +55,7 @@ class BuyerProductController extends Controller
             'product_id' => $product->id,
             'product_name' => $product->name,
             'price' => $product->price,
-            'vendor_id' => $product->user->quickbooks->vendor_id
+            'vendor_id' => $product->user->quickbooks->vendor_id,
         ]);
     }
 }
