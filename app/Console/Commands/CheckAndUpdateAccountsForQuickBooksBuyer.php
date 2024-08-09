@@ -31,13 +31,33 @@ class CheckAndUpdateAccountsForQuickBooksBuyer extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         User::role('Customer')
             ->whereHas('quickbooks')
             ->get()
             ->each(function(User $user){
+                $accounts = $this->accountingService->getAccountsFor($user);
 
+                foreach ($accounts as $account) {
+
+                    try {
+                        $user->quickbooks
+                            ->accounts()
+                            ->whereRef($account->Id)
+                            ->firstOrFail();
+                    }catch (\Exception $e) {
+                        $user->quickbooks
+                            ->accounts()
+                            ->create([
+                                'ref' => $account->Id,
+                                'name' => $account->Name,
+                                'type' => $account->AccountType,
+                                'user_id' => $user->id
+                            ]);
+                    }
+
+                }
             });
     }
 }

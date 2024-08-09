@@ -31,4 +31,9 @@ class QuickBooks extends Model
     {
         return $this->hasMany(QuickBooksCustomer::class);
     }
+
+    public function accounts(): HasMany
+    {
+        return $this->hasMany(QuickBooksAccount::class);
+    }
 }

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('ref');
             $table->string('type');
+            $table->integer('is_default')->default(0);
             $table->timestamps();
         });
     }
