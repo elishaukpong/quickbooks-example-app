@@ -19,7 +19,9 @@ class QuickBooksController extends Controller
 
     public function index(): View
     {
-        return view('quickbooks.index');
+        $accounts = auth()->user()->quickbooks?->accounts ?? [];
+
+        return view('quickbooks.index', ['accounts' => $accounts]);
     }
 
     public function connect(): RedirectResponse

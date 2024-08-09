@@ -78,9 +78,10 @@ class QuickBooksService implements AccountingService
             $vendor = $this->getVendorDetailsFor($options['vendor']);
 
             $purchaseData = [
+                "PaymentType" => "Cash",
                 "AccountRef" => [
-                    "name" => "Billable Expense Income",
-                    "value" => "125",
+                    "name" => "Undeposited Funds",
+                    "value" => "224",
                 ],
                 "EntityRef" => [
                     "value" => $vendor->vendor_id,
@@ -93,13 +94,12 @@ class QuickBooksService implements AccountingService
                         "Amount" => $options['price'],
                         "AccountBasedExpenseLineDetail" => [
                             "AccountRef" => [
-                                "name" => "Gross Receipts",
-                                "value" => "165",
+                                "name" => "Supplies",
+                                "value" => "242",
                             ]
                         ]
                     ]
                 ],
-                "PaymentType" => "Cash",
             ];
 
             $purchase = Purchase::create($purchaseData);
