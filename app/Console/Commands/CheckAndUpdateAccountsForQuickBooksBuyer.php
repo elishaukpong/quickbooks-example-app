@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Contracts\AccountingService;
+use App\Enums\UserTypes;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -33,7 +34,7 @@ class CheckAndUpdateAccountsForQuickBooksBuyer extends Command
      */
     public function handle(): void
     {
-        User::role('Customer')
+        User::whereRole(UserTypes::BUYER)
             ->whereHas('quickbooks')
             ->get()
             ->each(function(User $user){

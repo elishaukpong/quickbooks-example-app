@@ -201,7 +201,7 @@ class QuickBooksService implements AccountingService
      */
     public function query(string $string)
     {
-        $this->setAccessTokenWithRefreshAbilities();
+//        $this->setAccessTokenWithRefreshAbilities();
 
         return $this->dataService->Query($string);
     }
