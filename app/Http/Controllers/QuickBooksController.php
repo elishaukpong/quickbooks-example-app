@@ -73,7 +73,7 @@ class QuickBooksController extends Controller
         $user = auth()->user();
 
         if(auth()->user()->isBuyer()) {
-            $customerDetails = $this->accountingService->query("SELECT * FROM vendor");
+            $customerDetails = $this->accountingService->query("SELECT * FROM Account");
 
             dd($customerDetails);
         } else {

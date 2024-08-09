@@ -79,8 +79,8 @@ class QuickBooksService implements AccountingService
 
             $purchaseData = [
                 "AccountRef" => [
-                    "name" => "Undeposited Funds",
-                    "value" => "163",
+                    "name" => "Billable Expense Income",
+                    "value" => "125",
                 ],
                 "EntityRef" => [
                     "value" => $vendor->vendor_id,
@@ -318,5 +318,12 @@ class QuickBooksService implements AccountingService
                     'customer_id' => $customerDetails->Id
                 ]);
         }
+    }
+
+    public function getAccountsFor(User $user): array
+    {
+        $this->setAccessTokenWithRefreshAbilities($user);
+
+        return $this->query('SELECT * FROM Account') ?? [];
     }
 }

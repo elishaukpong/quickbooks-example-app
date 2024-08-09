@@ -27,4 +27,6 @@ interface AccountingService
 
     public function createVendor(array $options);
 
+    public function getAccountsFor(User $user);
+
 }
