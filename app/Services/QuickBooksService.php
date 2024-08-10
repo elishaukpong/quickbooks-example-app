@@ -11,10 +11,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
 use QuickBooksOnline\API\DataService\DataService;
-use QuickBooksOnline\API\Exception\IdsException;
-use QuickBooksOnline\API\Exception\SdkException;
-use QuickBooksOnline\API\Exception\ServiceException;
-use QuickBooksOnline\API\Facades\Account;
 use QuickBooksOnline\API\Facades\Customer;
 use QuickBooksOnline\API\Facades\Purchase;
 use QuickBooksOnline\API\Facades\SalesReceipt;
@@ -295,5 +291,25 @@ class QuickBooksService implements AccountingService
         $this->setAccessTokenWithRefreshAbilities($user);
 
         return $this->query('SELECT * FROM Account') ?? [];
+    }
+
+    public function setLogLocation($location): void
+    {
+        // TODO: Implement setLogLocation() method.
+    }
+
+    public function createAccount(User $user, array $options)
+    {
+        // TODO: Implement createAccount() method.
+    }
+
+    public function createPaymentMethods(User $user, array $options)
+    {
+        // TODO: Implement createPaymentMethods() method.
+    }
+
+    public function createItems(User $user, array $options)
+    {
+        // TODO: Implement createItems() method.
     }
 }

@@ -29,4 +29,12 @@ interface AccountingService
 
     public function getAccountsFor(User $user);
 
+    public function setLogLocation($location): void;
+
+    public function createAccount(User $user, array $options);
+
+    public function createPaymentMethods(User $user, array $options);
+
+    public function createItems(User $user, array $options);
+
 }
